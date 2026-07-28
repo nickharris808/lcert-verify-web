@@ -4,7 +4,7 @@
 ![license](https://img.shields.io/badge/license-Apache--2.0-blue)
 ![node](https://img.shields.io/badge/node-%E2%89%A518-blue)
 ![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
-![conformance](https://img.shields.io/badge/conformance-90%20checks%20vs%20Python-brightgreen)
+![conformance](https://img.shields.io/badge/conformance-99%20checks%20vs%20Python-brightgreen)
 
 **Drop a certificate on a web page. Get a verdict in milliseconds. Nothing is uploaded.**
 
@@ -89,13 +89,26 @@ npm test
 
 ```
 worst erfc abs error vs Python: 3.614e-14
-87 passed, 0 failed
+99 passed, 0 failed
 ```
 
 The fixtures are produced by the *Python* implementation, so this is a genuine two-implementation
 comparison — six bundle cases (admit, straddle-reject, empty, super-threshold, tight-margin,
 wide-dose), erfc across 13 points, float rendering across 15 values, canonical JSON, and kappa/K
 tamper cases.
+
+
+## Honest scope — what this proves, and what it does not
+
+| Question | Answer |
+|---|---|
+| Is the artifact internally consistent, and does its verdict follow from its own numbers? | **Yes, always checked.** |
+| Was the artifact altered after it was produced, in a way that leaves an inconsistency? | **Yes, always caught.** |
+| Was the artifact altered *consistently* — inputs and verdict edited together? | **Only with an out-of-band fingerprint.** Without one this tool returns `UNVERIFIED` and refuses to assert. |
+| Do the numbers in it describe your physical design? | **Never checked.** That needs sound enclosures over process models — a separate commercial product. |
+
+The rule this code follows: **when in doubt, refuse.** A verdict of `UNVERIFIED` is not a
+failure of your certificate; it is this tool declining to claim something it has not established.
 
 ## What is not checked
 

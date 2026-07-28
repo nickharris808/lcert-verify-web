@@ -1,7 +1,7 @@
 [
  {
   "dir": "admit",
-  "python_ok": true,
+  "python_ok": false,
   "python_verdicts": {
    "admit": {
     "interval_admit": true,
@@ -15,7 +15,7 @@
  },
  {
   "dir": "reject_straddle",
-  "python_ok": true,
+  "python_ok": false,
   "python_verdicts": {
    "reject_straddle": {
     "interval_admit": false,
@@ -29,7 +29,7 @@
  },
  {
   "dir": "empty_loci",
-  "python_ok": true,
+  "python_ok": false,
   "python_verdicts": {
    "empty_loci": {
     "interval_admit": true,
@@ -43,7 +43,7 @@
  },
  {
   "dir": "superthreshold",
-  "python_ok": true,
+  "python_ok": false,
   "python_verdicts": {
    "superthreshold": {
     "interval_admit": true,
@@ -57,7 +57,7 @@
  },
  {
   "dir": "tight_margin",
-  "python_ok": true,
+  "python_ok": false,
   "python_verdicts": {
    "tight_margin": {
     "interval_admit": false,
@@ -71,7 +71,7 @@
  },
  {
   "dir": "wide_dose",
-  "python_ok": true,
+  "python_ok": false,
   "python_verdicts": {
    "wide_dose": {
     "interval_admit": true,

@@ -14,13 +14,9 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 FIX = HERE / "fixtures"
-# Prefer an installed lcert-verify; fall back to a sibling checkout so this works
-# both standalone and inside a monorepo layout.
-try:
-    import lcert_verify as L
-except ImportError:  # pragma: no cover
-    sys.path.insert(0, str(HERE.parent.parent / "lcert-verify" / "src"))
-    import lcert_verify as L
+sys.path.insert(0, str(HERE.parent.parent / "lcert-verify" / "src"))
+
+import lcert_verify as L  # noqa: E402
 from lcert_verify import _verifier as V  # noqa: E402
 
 CASES = [

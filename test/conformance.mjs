@@ -73,6 +73,39 @@ for (const [objText, want] of canonRef)
   check("vacuous bundle allowed when requested", lax.errors.every(e => !e.includes("vacuous")));
 }
 
+/* ---- 2c. verdict taxonomy: abstain without an anchor, assert only with one ---- */
+{
+  const dir = JSON.parse(readFileSync(join(FIX, "cases.json"), "utf8"))[0].dir;
+  const txt = readFileSync(join(FIX, dir, "bundle.json"), "utf8");
+  const files = { "preregistration.json":
+    new Uint8Array(readFileSync(join(FIX, dir, "preregistration.json"))) };
+  const { createHash } = await import("node:crypto");
+  const fp = createHash("sha256").update(readFileSync(join(FIX, dir, "bundle.json"))).digest("hex");
+
+  const un = await verifyBundle(txt, files);
+  check("unanchored abstains", un.verdict === "UNVERIFIED", `got ${un.verdict}`);
+  check("unanchored is not ok", un.ok === false);
+  check("unanchored still reports internal consistency", un.internallyConsistent === true);
+  check("unanchored names the missing anchor", un.trustAnchor === "NONE");
+
+  const an = await verifyBundle(txt, files, fp);
+  check("anchored verifies", an.verdict === "VERIFIED", `got ${an.verdict}`);
+  check("anchored reports the anchor", an.trustAnchor === "fingerprint");
+
+  // the self-consistent forgery: internally perfect, refuted only by the anchor
+  const b = JSON.parse(txt);
+  b.gate_certs[0].loci.I_lo = [0.29]; b.gate_certs[0].loci.I_hi = [0.31];
+  const red = rederiveGateVerdict(b.gate_certs[0]);
+  b.gate_certs[0].recorded = Object.assign({}, red,
+    { float_admit: red.interval_admit, match: true });
+  const forged = JSON.stringify(b);
+  const fu = await verifyBundle(forged, files);
+  check("forgery unanchored abstains", fu.verdict === "UNVERIFIED", `got ${fu.verdict}`);
+  check("forgery unanchored is never VERIFIED", fu.verdict !== "VERIFIED");
+  const fa = await verifyBundle(forged, files, fp);
+  check("forgery anchored is refuted", fa.verdict === "REFUTED", `got ${fa.verdict}`);
+}
+
 /* ---- 3b. Python-compatible float rendering ---- */
 const floatRef = JSON.parse(readFileSync(join(FIX, "float_repr_reference.json"), "utf8"));
 for (const [lit, want] of floatRef) {

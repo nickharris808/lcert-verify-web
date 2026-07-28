@@ -243,8 +243,24 @@ export function checkKappaK(budget, safety, nPhotons, kappa, K) {
  * attacker can produce by simply deleting the certificates. Pass `false` only if
  * an empty bundle is genuinely expected.
  */
+export const VERDICT = {
+  VERIFIED: "VERIFIED",
+  VERIFIED_VACUOUS: "VERIFIED-VACUOUS",
+  INTERNALLY_CONSISTENT: "INTERNALLY-CONSISTENT",
+  UNVERIFIED: "UNVERIFIED",
+  VACUOUS: "VACUOUS",
+  REFUTED: "REFUTED",
+};
+
+const NO_ANCHOR =
+  "no trust anchor supplied — the bundle is internally consistent, but internal " +
+  "consistency cannot distinguish a genuine certificate from a self-consistent forgery " +
+  "(one where the physics inputs AND the recorded verdict were edited together). Supply " +
+  "the expected bundle fingerprint, obtained out of band. To accept the weaker " +
+  "internal-consistency check on purpose, pass { requireAnchor: false }.";
+
 export async function verifyBundle(bundleText, files = {}, expectedSha = "",
-                                   { requireCerts = true } = {}) {
+                                   { requireCerts = true, requireAnchor = true } = {}) {
   const errors = [];
   const raw = enc.encode(bundleText);
 
@@ -291,12 +307,33 @@ export async function verifyBundle(bundleText, files = {}, expectedSha = "",
   const nCerts = (bundle.gate_certs || []).length +
                  (bundle.image_bound_certs || []).length +
                  (bundle.resource_floor_certs || []).length;
-  if (requireCerts && nCerts === 0)
+  const nLoci = (bundle.gate_certs || [])
+    .reduce((s, c) => s + ((c.loci && c.loci.ae0) ? c.loci.ae0.length : 0), 0);
+
+  const internallyConsistent = errors.length === 0;
+  const fingerprint = hex(await sha256(raw));
+  let verdict, ok;
+
+  if (errors.length) {
+    verdict = VERDICT.REFUTED; ok = false;
+  } else if (requireCerts && nCerts === 0) {
+    verdict = VERDICT.VACUOUS; ok = false;
     errors.push("bundle carries no certificates — nothing was verified. This is a " +
                 "vacuous bundle; pass { requireCerts: false } if that is intended.");
+  } else if (!expectedSha) {
+    if (requireAnchor) { verdict = VERDICT.UNVERIFIED; ok = false; errors.push(NO_ANCHOR); }
+    else { verdict = VERDICT.INTERNALLY_CONSISTENT; ok = true; }
+  } else if (nLoci === 0) {
+    // Consistent, but no locus carried a proof obligation. Calling that VERIFIED
+    // would sell a guarantee nothing had to earn.
+    verdict = VERDICT.VERIFIED_VACUOUS; ok = true;
+  } else {
+    verdict = VERDICT.VERIFIED; ok = true;
+  }
 
-  return { ok: errors.length === 0, errors, bundle, nCertificates: nCerts,
-           fingerprint: hex(await sha256(raw)) };
+  return { ok, verdict, errors, bundle, nCertificates: nCerts, nGatedLoci: nLoci,
+           trustAnchor: expectedSha ? "fingerprint" : "NONE",
+           internallyConsistent, fingerprint };
 }
 
 export { FORMAT };

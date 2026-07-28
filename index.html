@@ -22,6 +22,8 @@
              border:1px solid var(--line); background:var(--card) }
   .verdict.ok { color:var(--ok); border-color:#17493b }
   .verdict.bad { color:var(--bad); border-color:#4d1f2c }
+  .verdict.abstain { color:#ffc44d; border-color:#4d3d1f }
+  .note { color:var(--dim); font-size:13px; margin-top:.5rem; line-height:1.5 }
   table { width:100%; border-collapse:collapse; margin-top:1rem; font-size:13.5px }
   td { padding:.42rem .6rem; border-bottom:1px solid var(--line); vertical-align:top }
   td:first-child { color:var(--dim); width:14rem }
@@ -93,11 +95,19 @@ function render(res) {
     }
     if (res.bundle.merkle_root) rows.push(["merkle root", res.bundle.merkle_root]);
     rows.push(["certificates checked", String(res.nCertificates ?? 0)]);
+    rows.push(["gated loci", String(res.nGatedLoci ?? 0)]);
+    rows.push(["trust anchor", res.trustAnchor ?? "NONE"]);
   }
   if (res.fingerprint) rows.push(["bundle fingerprint", `<span class="fp">${res.fingerprint}</span>`]);
 
+  const abstained = res.verdict === "UNVERIFIED";
+  const cls = res.ok ? "ok" : (abstained ? "abstain" : "bad");
   out.innerHTML =
-    `<div class="verdict ${res.ok ? "ok" : "bad"}">${res.ok ? "VERIFIED" : "NOT VERIFIED"}</div>` +
+    `<div class="verdict ${cls}">${esc(res.verdict || (res.ok ? "VERIFIED" : "NOT VERIFIED"))}</div>` +
+    (abstained ? `<div class="note">This is <strong>not</strong> a failure of the certificate — it is a
+       refusal to assert without evidence. Internal consistency alone cannot rule out a forgery in
+       which the physics inputs and the recorded verdict were edited together. Supply the expected
+       fingerprint, obtained out of band, to get a definite answer.</div>` : "") +
     (res.errors.length
       ? `<table>${res.errors.map(e => `<tr><td class="err">error</td><td class="err">${esc(e)}</td></tr>`).join("")}</table>`
       : "") +
