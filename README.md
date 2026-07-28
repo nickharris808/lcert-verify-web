@@ -1,0 +1,109 @@
+# lcert-verify-web
+
+![license](https://img.shields.io/badge/license-Apache--2.0-blue)
+![node](https://img.shields.io/badge/node-%E2%89%A518-blue)
+![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
+![conformance](https://img.shields.io/badge/conformance-90%20checks%20vs%20Python-brightgreen)
+![status](https://img.shields.io/badge/status-pre--release-orange)
+
+**Drop a certificate on a web page. Get a verdict in milliseconds. Nothing is uploaded.**
+
+A browser-side re-derivation of LCERT-1 certificate verdicts. Zero dependencies, no build step,
+no WASM toolchain, no server. Open `index.html` and it works — including from a `file://` URL on a
+laptop with the network cable pulled out.
+
+## Why this exists
+
+Certificates are only useful if the person who distrusts you can check them. That person will not
+install your Python package, and will not paste your mask geometry into someone's cloud endpoint.
+So the checker has to run where they already are, on hardware they control, with nothing leaving
+the tab.
+
+## Install
+
+> **Status: pre-release.** Not yet on npm. Until it is published, install from a
+> checkout:
+>
+> ```
+> cd verify-web   # no build step; src/lcert.js loads directly
+> ```
+
+```
+npm install lcert-verify-web
+```
+
+Or just copy `src/lcert.js`. It is one file with no imports.
+
+## 30-second quickstart
+
+```bash
+git clone <this repo> && cd verify-web
+npm run serve          # or: python3 -m http.server 8000
+open http://localhost:8000
+```
+
+Drag a bundle directory onto the page. You get `VERIFIED` or `NOT VERIFIED`, the per-certificate
+locus breakdown, the Merkle root, and the bundle fingerprint.
+
+Programmatically:
+
+```js
+import { verifyBundle } from "lcert-verify-web";
+
+const res = await verifyBundle(bundleText, { "preregistration.json": bytes }, expectedSha);
+console.log(res.ok, res.errors, res.fingerprint);
+```
+
+## The verdict is recomputed, not read
+
+`rederiveGateVerdict()` redoes the per-locus interval classification from the certificate's
+primitive quantities. A certificate whose recorded verdict disagrees with the re-derivation is
+rejected, and the error names the field:
+
+```
+[clip_a] recorded interval_admit=true but re-derived false
+```
+
+## Faithfulness to the reference implementation
+
+The interval arithmetic uses only IEEE-754 double `+ - * <`, `Math.max`, and `nextafter`. Those
+are correctly rounded by the standard and JavaScript numbers *are* IEEE doubles — the same ones
+CPython uses — so the per-locus classification is **bit-identical** to the Python verifier.
+
+Two honest exceptions, both measured rather than asserted:
+
+1. **`erfc`** is not in the JS standard library, so this package carries its own. It is accurate to
+   ~1e-14 absolute against Python's `math.erfc` (worst observed: **3.614e-14**), against a format
+   tolerance of 1e-12. The conformance suite checks this on every run rather than assuming it.
+2. **Canonical-JSON round-tripping is not reproduced here.** JSON cannot distinguish an integer
+   from an integral float, so a JS re-serialization can differ from the producer's bytes for
+   reasons that are not tampering. Byte-level integrity is instead established by the
+   **fingerprint** — pass `expectedSha`, obtained out of band. It catches strictly more than the
+   canonical check would.
+
+## Conformance suite
+
+```
+npm run fixtures     # generates fixtures from the Python reference implementation
+npm test
+```
+
+```
+worst erfc abs error vs Python: 3.614e-14
+87 passed, 0 failed
+```
+
+The fixtures are produced by the *Python* implementation, so this is a genuine two-implementation
+comparison — six bundle cases (admit, straddle-reject, empty, super-threshold, tight-margin,
+wide-dose), erfc across 13 points, float rendering across 15 values, canonical JSON, and kappa/K
+tamper cases.
+
+## What is not checked
+
+The physics. This confirms a certificate is internally consistent, untampered, and that its verdict
+follows from its own numbers. It does not confirm those numbers describe your design. Producing a
+meaningful certificate needs the certification engine, which is a separate closed product.
+
+## License
+
+Apache-2.0.

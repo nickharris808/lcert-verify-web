@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>lcert — verify a certificate in your browser</title>
+<style>
+  :root { --bg:#0b0d10; --fg:#e6e9ef; --dim:#8b94a3; --ok:#2ee6a8; --bad:#ff5c7a;
+          --line:#1d222b; --card:#12161c; }
+  * { box-sizing:border-box }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:15px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; padding:2.5rem 1.25rem }
+  main { max-width:820px; margin:0 auto }
+  h1 { font-size:1.35rem; margin:0 0 .35rem; letter-spacing:-.01em }
+  .sub { color:var(--dim); margin:0 0 1.75rem }
+  #drop { border:1.5px dashed var(--line); border-radius:12px; padding:3rem 1.5rem;
+          text-align:center; color:var(--dim); background:var(--card); cursor:pointer;
+          transition:border-color .15s, color .15s }
+  #drop.hot { border-color:var(--ok); color:var(--fg) }
+  #out { margin-top:1.5rem }
+  .verdict { font-size:1.1rem; font-weight:600; padding:.85rem 1rem; border-radius:10px;
+             border:1px solid var(--line); background:var(--card) }
+  .verdict.ok { color:var(--ok); border-color:#17493b }
+  .verdict.bad { color:var(--bad); border-color:#4d1f2c }
+  table { width:100%; border-collapse:collapse; margin-top:1rem; font-size:13.5px }
+  td { padding:.42rem .6rem; border-bottom:1px solid var(--line); vertical-align:top }
+  td:first-child { color:var(--dim); width:14rem }
+  .err { color:var(--bad) }
+  .fp { word-break:break-all; font-size:12.5px; color:var(--dim) }
+  footer { margin-top:2.5rem; color:var(--dim); font-size:13px; border-top:1px solid var(--line);
+           padding-top:1rem }
+  a { color:var(--ok) }
+  code { background:var(--card); padding:.1rem .3rem; border-radius:4px }
+</style>
+</head>
+<body>
+<main>
+  <h1>Verify a certificate</h1>
+  <p class="sub">Drop a bundle folder here. Nothing is uploaded &mdash; the check runs in this tab.</p>
+
+  <div id="drop" tabindex="0">
+    <div><strong>Drop a bundle directory</strong></div>
+    <div style="margin-top:.4rem">or click to choose &mdash; needs <code>bundle.json</code> and its payload files</div>
+  </div>
+  <input id="picker" type="file" webkitdirectory multiple hidden>
+
+  <div id="out"></div>
+
+  <footer>
+    The verdict is <strong>recomputed</strong> from the certificate's primitive quantities, not read
+    from it. The per-locus interval arithmetic is bit-identical to the reference implementation.
+    This checks internal consistency and integrity &mdash; <em>not</em> the physics.
+  </footer>
+</main>
+
+<script type="module">
+import { verifyBundle } from "./src/lcert.js";
+
+const drop = document.getElementById("drop");
+const picker = document.getElementById("picker");
+const out = document.getElementById("out");
+
+drop.addEventListener("click", () => picker.click());
+drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("hot"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("hot"));
+drop.addEventListener("drop", async e => {
+  e.preventDefault(); drop.classList.remove("hot");
+  await handle([...e.dataTransfer.files]);
+});
+picker.addEventListener("change", () => handle([...picker.files]));
+
+async function handle(files) {
+  const byName = {};
+  let bundleText = null;
+  for (const f of files) {
+    const rel = (f.webkitRelativePath || f.name).split("/").slice(1).join("/") || f.name;
+    const buf = new Uint8Array(await f.arrayBuffer());
+    if (rel === "bundle.json" || f.name === "bundle.json") bundleText = new TextDecoder().decode(buf);
+    else byName[rel] = buf;
+  }
+  if (!bundleText) { render({ ok:false, errors:["no bundle.json in the dropped selection"] }); return; }
+  render(await verifyBundle(bundleText, byName));
+}
+
+function render(res) {
+  const rows = [];
+  if (res.bundle) {
+    for (const c of res.bundle.gate_certs || []) {
+      const r = c.recorded || {};
+      rows.push([`certificate "${c.name}"`,
+        `${r.interval_admit ? "ADMIT" : "REJECT"} · ${r.n_loci} loci · ` +
+        `${r.n_certainly_safe} safe / ${r.n_certainly_unsafe} unsafe / ${r.n_straddle} straddling`]);
+    }
+    if (res.bundle.merkle_root) rows.push(["merkle root", res.bundle.merkle_root]);
+    rows.push(["certificates checked", String(res.nCertificates ?? 0)]);
+  }
+  if (res.fingerprint) rows.push(["bundle fingerprint", `<span class="fp">${res.fingerprint}</span>`]);
+
+  out.innerHTML =
+    `<div class="verdict ${res.ok ? "ok" : "bad"}">${res.ok ? "VERIFIED" : "NOT VERIFIED"}</div>` +
+    (res.errors.length
+      ? `<table>${res.errors.map(e => `<tr><td class="err">error</td><td class="err">${esc(e)}</td></tr>`).join("")}</table>`
+      : "") +
+    (rows.length ? `<table>${rows.map(([k,v]) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join("")}</table>` : "");
+}
+
+const esc = s => String(s).replace(/[&<>]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;" }[c]));
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+[
+ {
+  "dir": "admit",
+  "python_ok": true,
+  "python_verdicts": {
+   "admit": {
+    "interval_admit": true,
+    "n_certainly_safe": 3,
+    "n_certainly_unsafe": 0,
+    "n_loci": 3,
+    "n_straddle": 0,
+    "stable": true
+   }
+  }
+ },
+ {
+  "dir": "reject_straddle",
+  "python_ok": true,
+  "python_verdicts": {
+   "reject_straddle": {
+    "interval_admit": false,
+    "n_certainly_safe": 1,
+    "n_certainly_unsafe": 1,
+    "n_loci": 2,
+    "n_straddle": 0,
+    "stable": true
+   }
+  }
+ },
+ {
+  "dir": "empty_loci",
+  "python_ok": true,
+  "python_verdicts": {
+   "empty_loci": {
+    "interval_admit": true,
+    "n_certainly_safe": 0,
+    "n_certainly_unsafe": 0,
+    "n_loci": 0,
+    "n_straddle": 0,
+    "stable": true
+   }
+  }
+ },
+ {
+  "dir": "superthreshold",
+  "python_ok": true,
+  "python_verdicts": {
+   "superthreshold": {
+    "interval_admit": true,
+    "n_certainly_safe": 2,
+    "n_certainly_unsafe": 0,
+    "n_loci": 2,
+    "n_straddle": 0,
+    "stable": true
+   }
+  }
+ },
+ {
+  "dir": "tight_margin",
+  "python_ok": true,
+  "python_verdicts": {
+   "tight_margin": {
+    "interval_admit": false,
+    "n_certainly_safe": 0,
+    "n_certainly_unsafe": 1,
+    "n_loci": 1,
+    "n_straddle": 0,
+    "stable": true
+   }
+  }
+ },
+ {
+  "dir": "wide_dose",
+  "python_ok": true,
+  "python_verdicts": {
+   "wide_dose": {
+    "interval_admit": true,
+    "n_certainly_safe": 2,
+    "n_certainly_unsafe": 0,
+    "n_loci": 2,
+    "n_straddle": 0,
+    "stable": true
+   }
+  }
+ }
+]

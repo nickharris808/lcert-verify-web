@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install the reference implementation
+        run: pip install git+https://github.com/nickharris808/lcert-verify.git
+      - name: Generate fixtures from the Python reference
+        run: python3 test/gen_fixtures.py
+      - name: Run the JS conformance suite
+        run: node test/conformance.mjs

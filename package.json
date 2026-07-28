@@ -1,0 +1,36 @@
+{
+  "name": "lcert-verify-web",
+  "version": "1.0.0",
+  "description": "Browser-side verifier for LCERT-1 proof-carrying certificates \u2014 zero dependencies, nothing uploaded",
+  "type": "module",
+  "main": "src/lcert.js",
+  "exports": {
+    ".": "./src/lcert.js"
+  },
+  "files": [
+    "LICENSE",
+    "NOTICE",
+    "README.md",
+    "index.html",
+    "src/"
+  ],
+  "scripts": {
+    "fixtures": "python3 test/gen_fixtures.py",
+    "test": "node test/conformance.mjs",
+    "serve": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "certificate",
+    "verification",
+    "proof-carrying",
+    "wasm-free",
+    "eda",
+    "lithography"
+  ],
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {},
+  "author": "Nicholas Harris"
+}

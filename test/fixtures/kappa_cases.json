@@ -1,0 +1,83 @@
+[
+ {
+  "label": "clean_0.05",
+  "budget": 0.05,
+  "safety": 1.5,
+  "n_photons": 100.0,
+  "kappa": 1.163087153676674,
+  "K": 0.06087472771714682,
+  "python_clean": true
+ },
+ {
+  "label": "bad_kappa_0.05",
+  "budget": 0.05,
+  "safety": 1.5,
+  "n_photons": 100.0,
+  "kappa": 1.1747180252134408,
+  "K": 0.06087472771714682,
+  "python_clean": false
+ },
+ {
+  "label": "bad_K_0.05",
+  "budget": 0.05,
+  "safety": 1.5,
+  "n_photons": 100.0,
+  "kappa": 1.163087153676674,
+  "K": 0.06087472777802155,
+  "python_clean": false
+ },
+ {
+  "label": "clean_0.01",
+  "budget": 0.01,
+  "safety": 1.5,
+  "n_photons": 100.0,
+  "kappa": 1.6449763571331868,
+  "K": 0.12176762469872263,
+  "python_clean": true
+ },
+ {
+  "label": "bad_kappa_0.01",
+  "budget": 0.01,
+  "safety": 1.5,
+  "n_photons": 100.0,
+  "kappa": 1.6614261207045187,
+  "K": 0.12176762469872263,
+  "python_clean": false
+ },
+ {
+  "label": "bad_K_0.01",
+  "budget": 0.01,
+  "safety": 1.5,
+  "n_photons": 100.0,
+  "kappa": 1.6449763571331868,
+  "K": 0.12176762482049026,
+  "python_clean": false
+ },
+ {
+  "label": "clean_0.0001",
+  "budget": 0.0001,
+  "safety": 1.5,
+  "n_photons": 100.0,
+  "kappa": 2.629741776210273,
+  "K": 0.3111993814295502,
+  "python_clean": true
+ },
+ {
+  "label": "bad_kappa_0.0001",
+  "budget": 0.0001,
+  "safety": 1.5,
+  "n_photons": 100.0,
+  "kappa": 2.6560391939723758,
+  "K": 0.3111993814295502,
+  "python_clean": false
+ },
+ {
+  "label": "bad_K_0.0001",
+  "budget": 0.0001,
+  "safety": 1.5,
+  "n_photons": 100.0,
+  "kappa": 2.629741776210273,
+  "K": 0.3111993817407496,
+  "python_clean": false
+ }
+]
