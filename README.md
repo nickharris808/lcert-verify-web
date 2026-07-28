@@ -5,7 +5,6 @@
 ![node](https://img.shields.io/badge/node-%E2%89%A518-blue)
 ![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
 ![conformance](https://img.shields.io/badge/conformance-90%20checks%20vs%20Python-brightgreen)
-[![ci](https://github.com/nickharris808/lcert-verify-web/actions/workflows/ci.yml/badge.svg)](https://github.com/nickharris808/lcert-verify-web/actions/workflows/ci.yml)
 
 **Drop a certificate on a web page. Get a verdict in milliseconds. Nothing is uploaded.**
 
