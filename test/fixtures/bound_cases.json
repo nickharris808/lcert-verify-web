@@ -1,0 +1,242 @@
+[
+ {
+  "cert": {
+   "direction": "below",
+   "evidence": "",
+   "kind": "interval-bound/1",
+   "loci": {
+    "hi": [
+     351.2,
+     349.9
+    ],
+    "lo": [
+     340.0,
+     338.4
+    ]
+   },
+   "name": "bound_admit",
+   "quantity": "q",
+   "recorded": {
+    "admit": true,
+    "n_loci": 2,
+    "n_violating": 0,
+    "worst_margin": 6.949999999999989
+   },
+   "threshold": 358.15,
+   "unit": "u"
+  },
+  "dir": "bound_admit",
+  "python_errors": [],
+  "python_recorded": {
+   "admit": true,
+   "n_loci": 2,
+   "n_violating": 0,
+   "worst_margin": 6.949999999999989
+  },
+  "python_verdict": "VERIFIED"
+ },
+ {
+  "cert": {
+   "direction": "below",
+   "evidence": "",
+   "kind": "interval-bound/1",
+   "loci": {
+    "hi": [
+     351.2,
+     361.0
+    ],
+    "lo": [
+     340.0,
+     359.0
+    ]
+   },
+   "name": "bound_violating",
+   "quantity": "q",
+   "recorded": {
+    "admit": false,
+    "n_loci": 2,
+    "n_violating": 1,
+    "worst_margin": -2.8500000000000227
+   },
+   "threshold": 358.15,
+   "unit": "u"
+  },
+  "dir": "bound_violating",
+  "python_errors": [],
+  "python_recorded": {
+   "admit": false,
+   "n_loci": 2,
+   "n_violating": 1,
+   "worst_margin": -2.8500000000000227
+  },
+  "python_verdict": "VERIFIED"
+ },
+ {
+  "cert": {
+   "direction": "below",
+   "evidence": "",
+   "kind": "interval-bound/1",
+   "loci": {
+    "hi": [
+     350.0
+    ],
+    "lo": [
+     340.0
+    ]
+   },
+   "name": "bound_touching",
+   "quantity": "q",
+   "recorded": {
+    "admit": false,
+    "n_loci": 1,
+    "n_violating": 1,
+    "worst_margin": 0.0
+   },
+   "threshold": 350.0,
+   "unit": "u"
+  },
+  "dir": "bound_touching",
+  "python_errors": [],
+  "python_recorded": {
+   "admit": false,
+   "n_loci": 1,
+   "n_violating": 1,
+   "worst_margin": 0.0
+  },
+  "python_verdict": "VERIFIED"
+ },
+ {
+  "cert": {
+   "direction": "above",
+   "evidence": "",
+   "kind": "interval-bound/1",
+   "loci": {
+    "hi": [
+     0.94,
+     0.9
+    ],
+    "lo": [
+     0.91,
+     0.88
+    ]
+   },
+   "name": "bound_above",
+   "quantity": "q",
+   "recorded": {
+    "admit": true,
+    "n_loci": 2,
+    "n_violating": 0,
+    "worst_margin": 0.030000000000000027
+   },
+   "threshold": 0.85,
+   "unit": "u"
+  },
+  "dir": "bound_above",
+  "python_errors": [],
+  "python_recorded": {
+   "admit": true,
+   "n_loci": 2,
+   "n_violating": 0,
+   "worst_margin": 0.030000000000000027
+  },
+  "python_verdict": "VERIFIED"
+ },
+ {
+  "cert": {
+   "direction": "above",
+   "evidence": "",
+   "kind": "interval-bound/1",
+   "loci": {
+    "hi": [
+     0.94
+    ],
+    "lo": [
+     0.8
+    ]
+   },
+   "name": "bound_above_violating",
+   "quantity": "q",
+   "recorded": {
+    "admit": false,
+    "n_loci": 1,
+    "n_violating": 1,
+    "worst_margin": -0.04999999999999993
+   },
+   "threshold": 0.85,
+   "unit": "u"
+  },
+  "dir": "bound_above_violating",
+  "python_errors": [],
+  "python_recorded": {
+   "admit": false,
+   "n_loci": 1,
+   "n_violating": 1,
+   "worst_margin": -0.04999999999999993
+  },
+  "python_verdict": "VERIFIED"
+ },
+ {
+  "cert": {
+   "direction": "below",
+   "evidence": "",
+   "kind": "interval-bound/1",
+   "loci": {
+    "hi": [],
+    "lo": []
+   },
+   "name": "bound_empty",
+   "quantity": "q",
+   "recorded": {
+    "admit": false,
+    "n_loci": 0,
+    "n_violating": 0,
+    "worst_margin": 0.0
+   },
+   "threshold": 1.0,
+   "unit": "u"
+  },
+  "dir": "bound_empty",
+  "python_errors": [],
+  "python_recorded": {
+   "admit": false,
+   "n_loci": 0,
+   "n_violating": 0,
+   "worst_margin": 0.0
+  },
+  "python_verdict": "VERIFIED-VACUOUS"
+ },
+ {
+  "cert": {
+   "direction": "below",
+   "evidence": "",
+   "kind": "interval-bound/1",
+   "loci": {
+    "hi": [
+     0.9999999999999999
+    ],
+    "lo": [
+     0.0
+    ]
+   },
+   "name": "bound_tiny_margin",
+   "quantity": "q",
+   "recorded": {
+    "admit": true,
+    "n_loci": 1,
+    "n_violating": 0,
+    "worst_margin": 1.1102230246251565e-16
+   },
+   "threshold": 1.0,
+   "unit": "u"
+  },
+  "dir": "bound_tiny_margin",
+  "python_errors": [],
+  "python_recorded": {
+   "admit": true,
+   "n_loci": 1,
+   "n_violating": 0,
+   "worst_margin": 1.1102230246251565e-16
+  },
+  "python_verdict": "VERIFIED"
+ }
+]

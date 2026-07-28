@@ -259,6 +259,71 @@ const NO_ANCHOR =
   "the expected bundle fingerprint, obtained out of band. To accept the weaker " +
   "internal-consistency check on purpose, pass { requireAnchor: false }.";
 
+/**
+ * Re-derive an LCERT-BOUND-1 certificate — the domain-agnostic kind.
+ *
+ * A producer supplies per-locus intervals for some quantity, a threshold, and
+ * which side of it is safe. This recomputes the admission verdict from those
+ * numbers. It computes no physics; where the intervals came from is the
+ * producer's evidence, and checking that is not something any verifier can do.
+ *
+ * Kept bit-identical to the Python implementation: the same comparisons and the
+ * same single subtraction per locus, in the same order.
+ */
+export function verifyIntervalBoundCert(cert) {
+  const errors = [];
+  const name = cert.name ?? "?";
+  const dir = cert.direction;
+  if (dir !== "below" && dir !== "above") {
+    errors.push(`[${name}] direction must be 'below' or 'above', got ${JSON.stringify(dir)}`);
+    return errors;
+  }
+  const loci = cert.loci || {};
+  const lo = (loci.lo || []).map(Number);
+  const hi = (loci.hi || []).map(Number);
+  const thr = Number(cert.threshold);
+  if (lo.length !== hi.length) {
+    errors.push(`[${name}] E_LOCUS_COUNT: ${lo.length} lower bounds vs ${hi.length} upper bounds`);
+    return errors;
+  }
+  if (!Number.isFinite(thr) || !lo.every(Number.isFinite) || !hi.every(Number.isFinite)) {
+    errors.push(`[${name}] non-finite value in the certificate`);
+    return errors;
+  }
+  for (let j = 0; j < lo.length; j++) {
+    if (lo[j] > hi[j]) {
+      errors.push(`[${name}] E_INVERTED_INTERVAL: locus ${j} has lo > hi, which encloses nothing`);
+      return errors;
+    }
+  }
+  let violating = 0;
+  const margins = [];
+  for (let j = 0; j < lo.length; j++) {
+    const margin = dir === "below" ? thr - hi[j] : lo[j] - thr;
+    margins.push(margin);
+    if (margin <= 0) violating++;
+  }
+  const worst = margins.length ? Math.min(...margins) : 0;
+  const red = { admit: violating === 0 && lo.length > 0, n_violating: violating,
+                n_loci: lo.length, worst_margin: worst };
+  const rec = cert.recorded || {};
+  for (const k of ["admit", "n_violating", "n_loci"]) {
+    if (rec[k] !== red[k])
+      errors.push(`[${name}] recorded ${k}=${JSON.stringify(rec[k])} but re-derived ${JSON.stringify(red[k])}`);
+  }
+  const recWorst = rec.worst_margin;
+  if (typeof recWorst === "number" && Number.isFinite(recWorst)) {
+    // Claiming MORE margin than the numbers support is the attack. Less is merely
+    // conservative and is allowed.
+    if (recWorst > red.worst_margin)
+      errors.push(`[${name}] E_MARGIN_OVERSTATED: recorded worst margin ${recWorst} ` +
+                  `exceeds the re-derived ${red.worst_margin}`);
+  } else if (recWorst !== undefined && recWorst !== null) {
+    errors.push(`[${name}] worst_margin is not a finite number: ${JSON.stringify(recWorst)}`);
+  }
+  return errors;
+}
+
 export async function verifyBundle(bundleText, files = {}, expectedSha = "",
                                    { requireCerts = true, requireAnchor = true } = {}) {
   const errors = [];
@@ -304,11 +369,17 @@ export async function verifyBundle(bundleText, files = {}, expectedSha = "",
         errors.push(`[${name}] recorded ${k}=${JSON.stringify(rec[k])} but re-derived ${JSON.stringify(v)}`);
   }
 
+  for (const cert of bundle.interval_bound_certs || [])
+    for (const e of verifyIntervalBoundCert(cert)) errors.push(e);
+
   const nCerts = (bundle.gate_certs || []).length +
                  (bundle.image_bound_certs || []).length +
-                 (bundle.resource_floor_certs || []).length;
+                 (bundle.resource_floor_certs || []).length +
+                 (bundle.interval_bound_certs || []).length;
   const nLoci = (bundle.gate_certs || [])
-    .reduce((s, c) => s + ((c.loci && c.loci.ae0) ? c.loci.ae0.length : 0), 0);
+    .reduce((s, c) => s + ((c.loci && c.loci.ae0) ? c.loci.ae0.length : 0), 0) +
+    (bundle.interval_bound_certs || [])
+    .reduce((s, c) => s + ((c.loci && c.loci.lo) ? c.loci.lo.length : 0), 0);
 
   const internallyConsistent = errors.length === 0;
   const fingerprint = hex(await sha256(raw));

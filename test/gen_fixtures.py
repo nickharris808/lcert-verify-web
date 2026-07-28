@@ -50,6 +50,31 @@ def main() -> int:
         })
     (FIX / "cases.json").write_text(json.dumps(cases_meta, indent=1, sort_keys=True))
 
+    # LCERT-BOUND-1: the domain-agnostic kind. Both implementations must agree on
+    # the re-derivation, including the cases designed to trip it.
+    bound_cases = [
+        ("bound_admit", "below", 358.15, [(340.0, 351.2), (338.4, 349.9)]),
+        ("bound_violating", "below", 358.15, [(340.0, 351.2), (359.0, 361.0)]),
+        ("bound_touching", "below", 350.0, [(340.0, 350.0)]),
+        ("bound_above", "above", 0.85, [(0.91, 0.94), (0.88, 0.90)]),
+        ("bound_above_violating", "above", 0.85, [(0.80, 0.94)]),
+        ("bound_empty", "below", 1.0, []),
+        ("bound_tiny_margin", "below", 1.0, [(0.0, 0.9999999999999999)]),
+    ]
+    bound_meta = []
+    for name, direction, thr, loci in bound_cases:
+        cert = L.interval_bound_cert(name, quantity="q", unit="u", threshold=thr,
+                                     direction=direction, loci=loci)
+        d = FIX / name
+        L.make_bundle(d, interval_bound_certs=[cert], kpis=[],
+                      prereg={"case": name})
+        res = L.verify_bundle(d, L.bundle_fingerprint(d))
+        bound_meta.append({"dir": name, "cert": cert,
+                           "python_recorded": cert["recorded"],
+                           "python_verdict": res["verdict"],
+                           "python_errors": res["errors"]})
+    (FIX / "bound_cases.json").write_text(json.dumps(bound_meta, indent=1, sort_keys=True))
+
     xs = [0.0, 0.1, 0.5, 1.0, 1.2815515655446004, 1.6448536269514722,
           2.0, 2.5758293035489004, 3.0, 4.0, 5.0, 0.05, 0.001]
     (FIX / "erfc_reference.json").write_text(

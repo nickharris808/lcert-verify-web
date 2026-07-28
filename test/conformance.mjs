@@ -8,7 +8,8 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { verifyBundle, rederiveGateVerdict, erfc, checkKappaK, canon, pyFloatRepr } from "../src/lcert.js";
+import { verifyBundle, rederiveGateVerdict, erfc, checkKappaK, canon, pyFloatRepr,
+         verifyIntervalBoundCert } from "../src/lcert.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const FIX = join(here, "fixtures");
@@ -53,6 +54,28 @@ for (const c of cases) {
 }
 
 /* ---- 3. canonical JSON must match Python's separators=(',',':') ---- */
+// ---- LCERT-BOUND-1: the domain-agnostic certificate kind --------------------
+// The Python and JS re-derivations must agree exactly, including on the margin
+// that decides admission. These cases include a locus exactly ON the threshold
+// and one a single ULP inside it.
+const boundCases = JSON.parse(readFileSync(join(FIX, "bound_cases.json"), "utf8"));
+for (const c of boundCases) {
+  const errs = verifyIntervalBoundCert(c.cert);
+  check(`bound ${c.dir} agrees`, errs.length === 0,
+        `JS found ${errs.length} error(s) where Python found none: ${errs[0] ?? ""}`);
+
+  // and the re-derivation must reject the same tampering Python rejects
+  const overstated = JSON.parse(JSON.stringify(c.cert));
+  overstated.recorded.worst_margin = 1e9;
+  check(`bound ${c.dir} rejects an overstated margin`,
+        verifyIntervalBoundCert(overstated).some(e => e.includes("E_MARGIN_OVERSTATED")));
+
+  const flipped = JSON.parse(JSON.stringify(c.cert));
+  flipped.recorded.admit = !flipped.recorded.admit;
+  check(`bound ${c.dir} rejects a flipped admit`,
+        verifyIntervalBoundCert(flipped).some(e => e.includes("recorded admit")));
+}
+
 const canonRef = JSON.parse(readFileSync(join(FIX, "canon_reference.json"), "utf8"));
 for (const [objText, want] of canonRef)
   check(`canon ${want.slice(0, 40)}`, canon(JSON.parse(objText)) === want,
