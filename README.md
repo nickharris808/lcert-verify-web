@@ -1,10 +1,11 @@
 # lcert-verify-web
 
+[![ci](https://github.com/nickharris808/lcert-verify-web/actions/workflows/ci.yml/badge.svg)](https://github.com/nickharris808/lcert-verify-web/actions/workflows/ci.yml)
 ![license](https://img.shields.io/badge/license-Apache--2.0-blue)
 ![node](https://img.shields.io/badge/node-%E2%89%A518-blue)
 ![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
 ![conformance](https://img.shields.io/badge/conformance-90%20checks%20vs%20Python-brightgreen)
-![status](https://img.shields.io/badge/status-pre--release-orange)
+[![ci](https://github.com/nickharris808/lcert-verify-web/actions/workflows/ci.yml/badge.svg)](https://github.com/nickharris808/lcert-verify-web/actions/workflows/ci.yml)
 
 **Drop a certificate on a web page. Get a verdict in milliseconds. Nothing is uploaded.**
 
@@ -21,11 +22,10 @@ the tab.
 
 ## Install
 
-> **Status: pre-release.** Not yet on npm. Until it is published, install from a
-> checkout:
+> **Not yet on npm.** Clone it — there is no build step:
 >
 > ```
-> cd verify-web   # no build step; src/lcert.js loads directly
+> git clone https://github.com/nickharris808/lcert-verify-web.git
 > ```
 
 ```
@@ -107,3 +107,27 @@ meaningful certificate needs the certification engine, which is a separate close
 ## License
 
 Apache-2.0.
+
+---
+
+## The rest of the toolkit
+
+One idea, six pieces: **a recorded verdict is a claim to be checked, never an input to be trusted.**
+
+| | |
+|---|---|
+| [**lcert-verify**](https://github.com/nickharris808/lcert-verify) | Re-derive a manufacturing certificate's verdict. Stdlib only. |
+| [**equiv-receipt**](https://github.com/nickharris808/equiv-receipt) | Prove two circuits equivalent, with a receipt anyone can re-check. |
+| [**prereg-seal**](https://github.com/nickharris808/prereg-seal) | Seal acceptance criteria before you measure. |
+| [**cert-atlas**](https://github.com/nickharris808/cert-atlas) | 21 labelled forgeries and a metric no degenerate verifier can win. |
+| [**certified-mcp**](https://github.com/nickharris808/certified-mcp) | The above, as tools your AI agent can call. |
+| [**lcert-verify-web**](https://github.com/nickharris808/lcert-verify-web) | The verifier in a browser. Nothing uploaded. |
+
+**Try it now, no install:** [🔏 the verifier Space](https://huggingface.co/spaces/nickh007/cert-verifier) ·
+**Browse the forgeries:** [📊 the atlas dataset](https://huggingface.co/datasets/nickh007/cert-atlas)
+
+### Where the free edition stops
+
+Everything here **checks**. None of it **produces** a certificate that is physically meaningful —
+that needs sound enclosures over real process models, which is a separate commercial product. If
+you need certificates rather than a way to check them, that is the conversation to have.
