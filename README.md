@@ -2,8 +2,8 @@
 
 [![ci](https://github.com/nickharris808/lcert-verify-web/actions/workflows/ci.yml/badge.svg)](https://github.com/nickharris808/lcert-verify-web/actions/workflows/ci.yml)
 ![license](https://img.shields.io/badge/license-Apache--2.0-blue)
-![node](https://img.shields.io/badge/node-%E2%89%A518-blue)
 ![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
+![node](https://img.shields.io/badge/node-18+-blue)
 ![conformance](https://img.shields.io/badge/conformance-123%20checks%20vs%20Python-brightgreen)
 
 **Drop a certificate on a web page. Get a verdict in milliseconds. Nothing is uploaded.**
@@ -97,7 +97,6 @@ comparison — six bundle cases (admit, straddle-reject, empty, super-threshold,
 wide-dose), erfc across 13 points, float rendering across 15 values, canonical JSON, and kappa/K
 tamper cases.
 
-
 ## Honest scope — what this proves, and what it does not
 
 | Question | Answer |
@@ -158,6 +157,15 @@ Portfolio-wide: **[Tutorial](https://github.com/nickharris808/certified-oss/blob
 · **[FAQ](https://github.com/nickharris808/certified-oss/blob/main/FAQ.md)**
 · **[Architecture](https://github.com/nickharris808/certified-oss/blob/main/ARCHITECTURE.md)**
 · **[API reference](https://nickharris808.github.io/certified-oss/api/)**
+
+## Licence, citation, contributing
+
+Apache-2.0 — see [LICENSE](LICENSE). If you use this, please cite it:
+[CITATION.cff](CITATION.cff).
+
+The most valuable contribution is **a forgery this project fails to catch** —
+see [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[portfolio-wide guide](https://github.com/nickharris808/certified-oss/blob/main/CONTRIBUTING.md).
 
 ---
 
