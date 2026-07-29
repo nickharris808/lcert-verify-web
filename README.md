@@ -4,7 +4,7 @@
 ![license](https://img.shields.io/badge/license-Apache--2.0-blue)
 ![node](https://img.shields.io/badge/node-%E2%89%A518-blue)
 ![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
-![conformance](https://img.shields.io/badge/conformance-99%20checks%20vs%20Python-brightgreen)
+![conformance](https://img.shields.io/badge/conformance-123%20checks%20vs%20Python-brightgreen)
 
 **Drop a certificate on a web page. Get a verdict in milliseconds. Nothing is uploaded.**
 
@@ -89,7 +89,7 @@ npm test
 
 ```
 worst erfc abs error vs Python: 3.614e-14
-99 passed, 0 failed
+123 passed, 0 failed
 ```
 
 The fixtures are produced by the *Python* implementation, so this is a genuine two-implementation

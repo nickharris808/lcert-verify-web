@@ -145,5 +145,43 @@ for (const t of kk) {
 }
 
 console.log(`worst erfc abs error vs Python: ${worstErfc.toExponential(3)}`);
+// ---- the published count must be what this suite reports -------------------
+// A README badge saying "99 checks" while the suite runs 120 is a claim the code
+// does not support, and that is exactly what shipped. Same discipline as the
+// generated CLI reference and the leaderboard: a published number is re-derived,
+// never edited by hand.
+//
+// This is a stable fixed point rather than a circular one: these checks add a
+// fixed count regardless of the VALUE they compare, so writing the reported
+// total into the docs converges after one run.
+{
+  const total = pass + fail + docCheckCount();
+  for (const f of ["README.md", "TUTORIAL.md"]) {
+    let text;
+    try { text = readFileSync(join(here, "..", f), "utf8"); } catch { continue; }
+    for (const m of text.matchAll(/(\d+) passed, 0 failed/g))
+      check(`${f} quotes "${m[1]} passed"`, Number(m[1]) === total,
+            `the suite reports ${total}`);
+    for (const m of text.matchAll(/conformance-(\d+)%20checks/g))
+      check(`${f} badge claims ${m[1]}`, Number(m[1]) === total,
+            `the suite reports ${total}`);
+  }
+}
+
+// How many checks the block above will itself add. Counted from the docs so the
+// total is a fixed point rather than a moving target.
+function docCheckCount() {
+  let n = 0;
+  for (const f of ["README.md", "TUTORIAL.md"]) {
+    let text;
+    try { text = readFileSync(join(here, "..", f), "utf8"); } catch { continue; }
+    n += [...text.matchAll(/(\d+) passed, 0 failed/g)].length;
+    n += [...text.matchAll(/conformance-(\d+)%20checks/g)].length;
+  }
+  return n;
+}
+
+
 console.log(`${pass} passed, ${fail} failed`);
 if (fail) { for (const f of fails.slice(0, 20)) console.error("  FAIL " + f); process.exit(1); }
+

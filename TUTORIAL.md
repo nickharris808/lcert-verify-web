@@ -25,14 +25,14 @@ it out and the result is `UNVERIFIED`** — an abstention, not a failure.
 ## Why bit-identity matters, and how it is checked
 
 Two implementations of the same check are only useful if they agree. A conformance suite generates
-fixtures from the Python reference and asserts this port reproduces them — **120 checks**,
+fixtures from the Python reference and asserts this port reproduces them — **123 checks**,
 including IEEE-754 agreement on `erfc` (worst absolute error 3.6e-14), canonical-form rendering of
 floats, and the domain-agnostic `LCERT-BOUND-1` re-derivation on cases that include a locus
 exactly on the threshold and one a single ULP inside it.
 
 ```bash
 python3 test/gen_fixtures.py   # from the Python reference
-node test/conformance.mjs      # 120 passed, 0 failed
+node test/conformance.mjs      # 123 passed, 0 failed
 ```
 
 ## The one deliberate difference
